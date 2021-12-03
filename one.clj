@@ -43,6 +43,8 @@
     count-depth-increases-reduce])
   )
 
+;;; Part 2
+
 (defn count-depth-increases-sliding-window-loop
   [depths]
   (loop [depths depths
