@@ -14,6 +14,6 @@ pom.xml.asc
 .cpcache/
 
 # Calva
-.calva/
-.clj-kondo/
-.lsp/
+.calva/output-window/
+.clj-kondo/.cache/
+.lsp/.cache/
