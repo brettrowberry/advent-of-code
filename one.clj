@@ -42,3 +42,19 @@
    [count-depth-increases-loop
     count-depth-increases-reduce])
   )
+
+(defn count-depth-increases-sliding-window-loop
+  [depths]
+  (loop [depths depths
+         sum 0]
+    (if (> (count depths) 1)
+      (let [x (reduce + (take 3 depths))
+            y (reduce + (drop 1 (take 4 depths)))
+            new-sum (if (> y x) (inc sum) sum)]
+        (recur (next depths) new-sum))
+      sum)))
+
+(comment
+  (= 5
+     (count-depth-increases-sliding-window-loop depths))
+  )
