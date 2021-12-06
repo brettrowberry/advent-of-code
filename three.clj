@@ -38,11 +38,11 @@
   (let [threshold (/ total 2)]
     (map (fn [digit] (if (>= digit threshold) 1 0)) counts)))
 
-(defn gamma->epsilon
+(defn flip-bits
   [gamma]
   (map (fn [digit] (if (= digit 1) 0 1)) gamma))
 
-(defn gamma-or-epsilon->number
+(defn int-vector->number
   [gamma-or-epsilon]
   (-> gamma-or-epsilon
       string/join
@@ -52,10 +52,47 @@
   [report]
   (let [counts (report->counts report)
         gamma (counts->gamma counts)
-        epsilon (gamma->epsilon gamma)]
-    (* (gamma-or-epsilon->number gamma)
-       (gamma-or-epsilon->number epsilon))))
+        epsilon (flip-bits gamma)]
+    (* (int-vector->number gamma)
+       (int-vector->number epsilon))))
 
 (power-consumption report)
 
 ;; Part 2
+(defn get-bigger-bucket
+  [comparator index xs]
+  (let [{ones 1 zeros 0} (group-by (fn [x] (nth x index)) xs)]
+    (if (comparator (count ones) (count zeros))
+      ones
+      zeros)))
+
+(defn report->o2-or-co2
+  [report comparator]
+  (let [int-vectors (report->int-vectors report)
+        bit-string-length (count (first int-vectors))]
+    (->
+   (reduce
+    (fn [int-vectors index]
+      (if (= 1 (count int-vectors))
+        (reduced int-vectors)
+        (get-bigger-bucket comparator index int-vectors)))
+    int-vectors
+    (range bit-string-length))
+   first
+   int-vector->number)))
+
+(defn report->oxygen
+  [report]
+  (report->o2-or-co2 report >=))
+
+(defn report->co2
+  [report]
+  (report->o2-or-co2 report <))
+
+(defn report->life-support
+  [report]
+  (*
+   (report->oxygen report)
+   (report->co2 report)))
+
+(report->life-support report)
