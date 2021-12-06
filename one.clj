@@ -15,13 +15,13 @@
 (defn count-depth-increases-loop
   [depths]
   (loop [depths depths
-       sum 0]
-  (if (> (count depths) 1)
-    (let [x (first depths)
-          y (fnext depths)
-          new-sum (if (> y x) (inc sum) sum)]
-      (recur (next depths) new-sum))
-    sum)))
+         sum 0]
+    (if (> (count depths) 1)
+      (let [x (first depths)
+            y (fnext depths)
+            new-sum (if (> y x) (inc sum) sum)]
+        (recur (next depths) new-sum))
+      sum)))
 
 (defn count-depth-increases-reduce
   [depths]
