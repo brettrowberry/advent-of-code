@@ -31,7 +31,7 @@
 
 (defn line-segment->coordinates
   [s]
-  (let [[x1 y1 x2 y2] (->> (re-seq +#"\d" s)
+  (let [[x1 y1 x2 y2] (->> (re-seq #"\d+" s)
                            (map #(Integer/parseInt %)))]
     [[x1 y1] [x2 y2]]))
 
