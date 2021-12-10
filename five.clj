@@ -86,7 +86,7 @@
 (coordinates->points [3 0] [6 0])
 (coordinates->points [6 0] [3 0])
 
-(defn part-one
+(defn final-matrix
   [size line-segments]
   (let [starting-matrix (empty-matrix size)]
     (reduce
@@ -96,4 +96,13 @@
      starting-matrix
      (map line-segment->coordinates (clojure.string/split-lines line-segments)))))
 
-(part-one 10 line-segments)
+(defn part-one
+  []
+  (let [threshold 2]
+    (->>
+     (final-matrix 10 line-segments)
+     flatten
+     (filter #(>= % threshold))
+     count)))
+
+(part-one)
