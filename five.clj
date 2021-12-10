@@ -23,15 +23,12 @@
 ;; ..........
 ;; 222111....
 
-;; To avoid the most dangerous areas, you need to determine the number of points where at least two lines overlap.
+;; determine the number of points where at least two lines overlap.
 ;; In the above example, this is anywhere in the diagram with a 2 or larger - a total of 5 points.
 ;; Consider only horizontal and vertical lines. At how many points do at least two lines overlap?
 
 (def size 10)
-(def empty-matrix (vec (repeat size (vec (repeat size 0)))))
-
-(update-in [[0 0]
-            [0 0]] [0 0] inc)
+(defn empty-matrix [size] (vec (repeat size (vec (repeat size 0)))))
 
 (defn line-segment->coordinates
   [s]
@@ -43,7 +40,7 @@
   [m [x y]]
   (update-in m [x y] inc))
 
-(point->matrix empty-matrix [1 1])
+(point->matrix (empty-matrix size) [1 1])
 
 (defn points->matrix
   [m points]
@@ -53,16 +50,51 @@
    points))
 
 (points->matrix
- empty-matrix
+ (empty-matrix size)
  [[0 1] [1 1]])
+
+(defn vertical?
+  [[x1 _] [x2 _]]
+  (= x1 x2))
+
+(defn horizontal?
+  [[_ y1] [_ y2]]
+  (= y1 y2))
+
+(defn vertical-points
+  [[x1 y1] [_ y2]]
+  (mapv (partial vector x1) (range (min y1 y2) (inc (max y1 y2)))))
+
+(defn horizontal-points
+  [[x1 y1] [x2 _]]
+  (mapv (fn [x] (vector x y1)) (range (min x1 x2) (inc (max x1 x2)))))
 
 (defn coordinates->points
   [[x1 y1] [x2 y2]]
-  (if (= x1 x2)
-    (mapv (partial vector x1) (range (min y1 y2) (inc (max y1 y2))))
-    (mapv (fn [x] (vector x y1)) (range (min x1 x2) (inc (max x1 x2))))))
+  (cond
+    (horizontal? [x1 y1] [x2 y2]) (horizontal-points [x1 y1] [x2 y2])
+    (vertical? [x1 y1] [x2 y2]) (vertical-points [x1 y1] [x2 y2])
+    :diagonal []))
 
-(coordinates->points [0 3] [0 6])
+(coordinates->points [6 4] [2 0])
+
+(vertical-points [0 6] [0 3])
 (coordinates->points [0 6] [0 3])
+
+(horizontal-points [6 0] [3 0])
+(coordinates->points [6 0] [3 0])
+
 (coordinates->points [3 0] [6 0])
 (coordinates->points [6 0] [3 0])
+
+(defn part-one
+  [size line-segments]
+  (let [starting-matrix (empty-matrix size)]
+    (reduce
+     (fn [m [pt1 pt2]]
+       (prn pt1)
+       (points->matrix m (coordinates->points pt1 pt2)))
+     starting-matrix
+     (map line-segment->coordinates (clojure.string/split-lines line-segments)))))
+
+(part-one 10 line-segments)
