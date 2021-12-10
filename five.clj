@@ -31,7 +31,7 @@
 
 (defn line-segment->coordinates
   [s]
-  (let [[x1 y1 x2 y2] (->> (re-seq #"\d" s)
+  (let [[x1 y1 x2 y2] (->> (re-seq +#"\d" s)
                            (map #(Integer/parseInt %)))]
     [[x1 y1] [x2 y2]]))
 
@@ -86,23 +86,27 @@
 (coordinates->points [3 0] [6 0])
 (coordinates->points [6 0] [3 0])
 
+(defn line-segment-string->endpoints
+  [s]
+  (map line-segment->coordinates (clojure.string/split-lines s)))
+
 (defn final-matrix
-  [size line-segments]
+  [size line-segment-string]
   (let [starting-matrix (empty-matrix size)]
     (reduce
      (fn [m [pt1 pt2]]
-       (prn pt1)
        (points->matrix m (coordinates->points pt1 pt2)))
      starting-matrix
-     (map line-segment->coordinates (clojure.string/split-lines line-segments)))))
+     (line-segment-string->endpoints line-segment-string))))
 
 (defn part-one
-  []
+  [line-segments]
   (let [threshold 2]
     (->>
-     (final-matrix 10 line-segments)
+     (final-matrix 1000 line-segments)
      flatten
      (filter #(>= % threshold))
      count)))
 
-(part-one)
+(assert (= 5 (part-one line-segments))
+        "should be 5")
