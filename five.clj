@@ -1,6 +1,6 @@
 (ns five)
 
-(def line-segments
+(def line-segment-string
   "0,9 -> 5,9
 8,0 -> 0,8
 9,4 -> 3,4
@@ -68,23 +68,23 @@
   [[x1 y1] [x2 _]]
   (mapv (fn [x] (vector x y1)) (range (min x1 x2) (inc (max x1 x2)))))
 
-(defn coordinates->points
-  [[x1 y1] [x2 y2]]
+(defn endpoints->points
+  [[[x1 y1] [x2 y2]]]
   (cond
     (horizontal? [x1 y1] [x2 y2]) (horizontal-points [x1 y1] [x2 y2])
     (vertical? [x1 y1] [x2 y2]) (vertical-points [x1 y1] [x2 y2])
     :diagonal []))
 
-(coordinates->points [6 4] [2 0])
+(endpoints->points [[6 4] [2 0]])
 
 (vertical-points [0 6] [0 3])
-(coordinates->points [0 6] [0 3])
+(endpoints->points [[0 6] [0 3]])
 
 (horizontal-points [6 0] [3 0])
-(coordinates->points [6 0] [3 0])
+(endpoints->points [[6 0] [3 0]])
 
-(coordinates->points [3 0] [6 0])
-(coordinates->points [6 0] [3 0])
+(endpoints->points [[3 0] [6 0]])
+(endpoints->points [[6 0] [3 0]])
 
 (defn line-segment-string->endpoints
   [s]
@@ -94,8 +94,8 @@
   [size line-segment-string]
   (let [starting-matrix (empty-matrix size)]
     (reduce
-     (fn [m [pt1 pt2]]
-       (points->matrix m (coordinates->points pt1 pt2)))
+     (fn [m endpoints]
+       (points->matrix m (endpoints->points endpoints)))
      starting-matrix
      (line-segment-string->endpoints line-segment-string))))
 
@@ -108,5 +108,13 @@
      (filter #(>= % threshold))
      count)))
 
-(assert (= 5 (part-one line-segments))
-        "should be 5")
+(assert (= 5 (part-one line-segment-string)) "should be 5")
+
+;;; what if I told you we don't need a matrix?
+(->> line-segment-string
+     line-segment-string->endpoints
+     (mapcat endpoints->points)
+     frequencies
+     vals
+     (filter #(>= % 2))
+     count)
