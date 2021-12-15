@@ -44,7 +44,7 @@
                   (> x1 x2) reverse)
         y-range (cond-> (make-range y1 y2)
                   (> y1 y2) reverse)]
-    (mapv #(vector %1 %2) x-range y-range)))
+    (mapv vector x-range y-range)))
 
 (defn endpoints->points
   [[[x1 y1] [x2 y2]]]
