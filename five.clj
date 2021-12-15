@@ -13,8 +13,8 @@
 5,5 -> 8,2")
 
 (defn line-segment->coordinates
-  [s]
-  (let [[x1 y1 x2 y2] (->> (re-seq #"\d+" s)
+  [line-segment]
+  (let [[x1 y1 x2 y2] (->> (re-seq #"\d+" line-segment)
                            (map #(Integer/parseInt %)))]
     [[x1 y1] [x2 y2]]))
 
@@ -51,7 +51,8 @@
   (cond
     (horizontal? [x1 y1] [x2 y2]) (horizontal-points [x1 y1] [x2 y2])
     (vertical? [x1 y1] [x2 y2]) (vertical-points [x1 y1] [x2 y2])
-    :else (diagonal-points [x1 y1] [x2 y2])))
+    :else (diagonal-points [x1 y1] [x2 y2]) ;; return [] for part 1
+    ))
 
 (defn line-segment-string->endpoints
   [s]
