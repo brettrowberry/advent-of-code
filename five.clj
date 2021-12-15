@@ -12,21 +12,6 @@
 0,0 -> 8,8
 5,5 -> 8,2")
 
-;; .......1..
-;; ..1....1..
-;; ..1....1..
-;; .......1..
-;; .112111211
-;; ..........
-;; ..........
-;; ..........
-;; ..........
-;; 222111....
-
-;; determine the number of points where at least two lines overlap.
-;; In the above example, this is anywhere in the diagram with a 2 or larger - a total of 5 points.
-;; Consider only horizontal and vertical lines. At how many points do at least two lines overlap?
-
 (defn line-segment->coordinates
   [s]
   (let [[x1 y1 x2 y2] (->> (re-seq #"\d+" s)
