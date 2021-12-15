@@ -55,12 +55,10 @@
 
 (defn diagonal-points
   [[x1 y1] [x2 y2]]
-  (let [x-range (if (> x1 x2)
-                  (reverse (make-range x1 x2))
-                  (make-range x1 x2))
-        y-range (if (> y1 y2)
-                  (reverse (make-range y1 y2))
-                  (make-range y1 y2))]
+  (let [x-range (cond-> (make-range x1 x2)
+                  (> x1 x2) reverse) 
+        y-range (cond-> (make-range y1 y2)
+                  (> y1 y2) reverse)]
     (mapv #(vector %1 %2) x-range y-range)))
 
 (defn endpoints->points
