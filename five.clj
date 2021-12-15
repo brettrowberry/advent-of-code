@@ -26,17 +26,17 @@
   [[_ y1] [_ y2]]
   (= y1 y2))
 
-(defn vertical-points
-  [[x1 y1] [_ y2]]
-  (mapv (partial vector x1) (range (min y1 y2) (inc (max y1 y2)))))
-
-(defn horizontal-points
-  [[x1 y1] [x2 _]]
-  (mapv (fn [x] (vector x y1)) (range (min x1 x2) (inc (max x1 x2)))))
-
 (defn make-range
   [p1 p2]
   (range (min p1 p2) (inc (max p1 p2))))
+
+(defn vertical-points
+  [[x1 y1] [_ y2]]
+  (mapv (partial vector x1) (make-range y1 y2)))
+
+(defn horizontal-points
+  [[x1 y1] [x2 _]]
+  (mapv (fn [x] (vector x y1)) (make-range x1 x2)))
 
 (defn diagonal-points
   [[x1 y1] [x2 y2]]
