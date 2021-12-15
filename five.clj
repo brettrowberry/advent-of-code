@@ -89,7 +89,7 @@
   (cond
     (horizontal? [x1 y1] [x2 y2]) (horizontal-points [x1 y1] [x2 y2])
     (vertical? [x1 y1] [x2 y2]) (vertical-points [x1 y1] [x2 y2])
-    :else [] #_(diagonal-points [x1 y1] [x2 y2])))
+    :else (diagonal-points [x1 y1] [x2 y2])))
 
 (endpoints->points [[6 4] [2 0]])
 
