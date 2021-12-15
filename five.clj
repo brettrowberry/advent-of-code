@@ -27,30 +27,11 @@
 ;; In the above example, this is anywhere in the diagram with a 2 or larger - a total of 5 points.
 ;; Consider only horizontal and vertical lines. At how many points do at least two lines overlap?
 
-(defn empty-matrix [size] (vec (repeat size (vec (repeat size 0)))))
-
 (defn line-segment->coordinates
   [s]
   (let [[x1 y1 x2 y2] (->> (re-seq #"\d+" s)
                            (map #(Integer/parseInt %)))]
     [[x1 y1] [x2 y2]]))
-
-(defn point->matrix
-  [m [x y]]
-  (update-in m [x y] inc))
-
-(point->matrix (empty-matrix 10) [1 1])
-
-(defn points->matrix
-  [m points]
-  (reduce
-   point->matrix
-   m
-   points))
-
-(points->matrix
- (empty-matrix 10)
- [[0 1] [1 1]])
 
 (defn vertical?
   [[x1 _] [x2 _]]
@@ -68,21 +49,19 @@
   [[x1 y1] [x2 _]]
   (mapv (fn [x] (vector x y1)) (range (min x1 x2) (inc (max x1 x2)))))
 
+(defn make-range
+  [p1 p2]
+  (range (min p1 p2) (inc (max p1 p2))))
+
 (defn diagonal-points
   [[x1 y1] [x2 y2]]
   (let [x-range (if (> x1 x2)
-                  (reverse (range (min x1 x2) (inc (max x1 x2))))
-                  (range (min x1 x2) (inc (max x1 x2))))
+                  (reverse (make-range x1 x2))
+                  (make-range x1 x2))
         y-range (if (> y1 y2)
-                  (reverse (range (min y1 y2) (inc (max y1 y2))))
-                  (range (min y1 y2) (inc (max y1 y2))))]
-    #_(partition-all 2 (interleave x-range y-range))
+                  (reverse (make-range y1 y2))
+                  (make-range y1 y2))]
     (mapv #(vector %1 %2) x-range y-range)))
-
-(diagonal-points [1 1] [3 3]) ;; [1 1] [2 2] [3 3]
-(diagonal-points [9 7] [7 9]) ;; [9 7] [8 8] [7 9]
-
-(mapv #(vector %1 %2) [9 8 7] [1 2 3])
 
 (defn endpoints->points
   [[[x1 y1] [x2 y2]]]
@@ -91,43 +70,9 @@
     (vertical? [x1 y1] [x2 y2]) (vertical-points [x1 y1] [x2 y2])
     :else (diagonal-points [x1 y1] [x2 y2])))
 
-(endpoints->points [[6 4] [2 0]])
-
-(vertical-points [0 6] [0 3])
-(endpoints->points [[0 6] [0 3]])
-
-(horizontal-points [6 0] [3 0])
-(endpoints->points [[6 0] [3 0]])
-
-(endpoints->points [[3 0] [6 0]])
-(endpoints->points [[6 0] [3 0]])
-
-(endpoints->points [[1 1] [3 3]])
-(endpoints->points [[9 7] [7 9]])
-
 (defn line-segment-string->endpoints
   [s]
   (map line-segment->coordinates (clojure.string/split-lines s)))
-
-(defn final-matrix
-  [size line-segment-string]
-  (let [starting-matrix (empty-matrix size)]
-    (reduce
-     (fn [m endpoints]
-       (points->matrix m (endpoints->points endpoints)))
-     starting-matrix
-     (line-segment-string->endpoints line-segment-string))))
-
-(defn part-one
-  [line-segments]
-  (let [threshold 2]
-    (->>
-     (final-matrix 1000 line-segments)
-     flatten
-     (filter #(>= % threshold))
-     count)))
-
-(assert (= 5 (part-one line-segment-string)) "should be 5")
 
 ;;; what if I told you we don't need a matrix?
 (->> line-segment-string
