@@ -68,12 +68,28 @@
   [[x1 y1] [x2 _]]
   (mapv (fn [x] (vector x y1)) (range (min x1 x2) (inc (max x1 x2)))))
 
+(defn diagonal-points
+  [[x1 y1] [x2 y2]]
+  (let [x-range (if (> x1 x2)
+                  (reverse (range (min x1 x2) (inc (max x1 x2))))
+                  (range (min x1 x2) (inc (max x1 x2))))
+        y-range (if (> y1 y2)
+                  (reverse (range (min y1 y2) (inc (max y1 y2))))
+                  (range (min y1 y2) (inc (max y1 y2))))]
+    #_(partition-all 2 (interleave x-range y-range))
+    (mapv #(vector %1 %2) x-range y-range)))
+
+(diagonal-points [1 1] [3 3]) ;; [1 1] [2 2] [3 3]
+(diagonal-points [9 7] [7 9]) ;; [9 7] [8 8] [7 9]
+
+(mapv #(vector %1 %2) [9 8 7] [1 2 3])
+
 (defn endpoints->points
   [[[x1 y1] [x2 y2]]]
   (cond
     (horizontal? [x1 y1] [x2 y2]) (horizontal-points [x1 y1] [x2 y2])
     (vertical? [x1 y1] [x2 y2]) (vertical-points [x1 y1] [x2 y2])
-    :diagonal []))
+    :diagonal (diagonal-points [x1 y1] [x2 y2])))
 
 (endpoints->points [[6 4] [2 0]])
 
@@ -85,6 +101,9 @@
 
 (endpoints->points [[3 0] [6 0]])
 (endpoints->points [[6 0] [3 0]])
+
+(endpoints->points [[1 1] [3 3]])
+(endpoints->points [[9 7] [7 9]])
 
 (defn line-segment-string->endpoints
   [s]
